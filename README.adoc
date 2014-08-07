@@ -1,0 +1,76 @@
+== Annotations Configuration
+
+This library is a helper for library writer using annotations.
+
+Idea is to be able to rely on it to support Annotation and XML configuration.
+
+For instance:
+
+[source,java]
+----
+@FooType("foo")
+public class DecoratedClass {
+    @FooField(value = "vF", bar = 5, provider = DecoratedClass.class)
+    private String aField;
+
+    @FooMethod(value = "V3", bar = 5, provider = AnotherClass.class)
+    public String aMethod(final String w) {
+        return null;
+    }
+}
+----
+
+Can also be done using:
+
+[source,xml]
+----
+<model>
+    <class name="org.superbiz.DecoratedClassWithOther">
+        <annotation class="org.superbiz.FooType">
+            <member name="value" value="foo" />
+        </annotation>
+        <method name="aMethod">
+            <annotation class="org.superbiz.FooMethod">
+                <member name="bar value="5"/>
+                <member name="provider value="org.superbiz.DecoratedClass" />
+                <member name="value value="VF" />
+            </annotation>
+        </method>
+        <field name="aField">
+            <annotation class="org.superbiz.FooField">
+                <member name="bar value="5" />
+                <member name="provider\value="org.superbiz.AnotherClass" />
+                <member name="value value="V3" />
+            </annotation>
+        </field>
+    </class>
+</model>
+----
+
+Of course you can add multiple <class /> or <field /> or <method /> or <annotation /> blocks.
+
+Then you need to create a parser:
+
+[source,java]
+----
+final Parser parser = new Parser(myModelInsputStream); // inpustream as null is supported as no XML metadata
+final ConfigurableClass clazz = parser.parse(DecoratedClassWithOther.class);
+final ConfigurableField field = clazz.getField("aField"); // or use clazz.fields() to iterate over all
+final ConfigurableMethod method = clazz.getMethod("aMethod", String.class); // or use clazz.methods() to iterate over all
+
+// then each Configurable* has getAnnotations() to get all annotations
+// or getAnnotation(Class<? extends Annotation>) to get a single annotation
+// these two methods use the merged model (XML + reflection)
+----
+
+If you want to remove an annotation from reflection model define it adding remove tag:
+
+
+[source,xml]
+----
+<model>
+    <class name="org.superbiz.DecoratedClassWithOther">
+        <annotation class="org.superbiz.FooType" remove="true" /> <!-- no need of members -->
+    </class>
+</model>
+----
