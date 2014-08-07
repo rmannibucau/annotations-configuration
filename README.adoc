@@ -40,7 +40,7 @@ Can also be done using:
             <annotation class="org.superbiz.FooField">
                 <member name="bar value="5" />
                 <member name="provider" value="org.superbiz.AnotherClass" />
-                <member name="value value="V3" />
+                <member name="value" value="V3" />
             </annotation>
         </field>
     </class>
